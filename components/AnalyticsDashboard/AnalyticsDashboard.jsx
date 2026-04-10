@@ -489,6 +489,24 @@ export default function AnalyticsDashboard() {
                   );
                 })}
               </div>
+              
+              {ratingsOverview.recentReviews?.length > 0 && (
+                <div className={styles.recentReviewsList}>
+                  <h4 className={styles.recentTitle} style={{ marginTop: '1.25rem', marginBottom: '0.75rem' }}>Recent Reviews</h4>
+                  {ratingsOverview.recentReviews.map((r, i) => (
+                    <div key={i} className={styles.reviewItem}>
+                      <div className={styles.reviewHeader}>
+                        <RatingStars rating={r.stars} />
+                        <span className={styles.reviewDate}>
+                          {new Date(r.date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                      </div>
+                      <p className={styles.reviewText}>"{r.text}"</p>
+                      <span className={styles.reviewAuthor}>— {r.reviewer}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </div>

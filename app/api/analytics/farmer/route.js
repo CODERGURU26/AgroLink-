@@ -121,7 +121,7 @@ export async function GET(request) {
     };
 
     // ── 7. Ratings & Reviews ──
-    const ratings = await Rating.find({ toId: farmerId }).lean();
+    const ratings = await Rating.find({ toId: farmerId }).sort({ createdAt: -1 }).lean();
     const avgRating = ratings.length > 0
       ? Number((ratings.reduce((sum, r) => sum + r.stars, 0) / ratings.length).toFixed(1))
       : 0;
@@ -130,10 +130,27 @@ export async function GET(request) {
       ratingDistribution[r.stars] = (ratingDistribution[r.stars] || 0) + 1;
     });
 
+    // Get order ID to buyer name mapping
+    const orderMap = {};
+    allOrders.forEach(o => {
+      orderMap[o._id.toString()] = o.buyerName || 'Unknown Buyer';
+    });
+
+    const recentReviews = ratings
+      .filter(r => r.review && r.review.trim() !== '')
+      .slice(0, 10)
+      .map(r => ({
+        stars: r.stars,
+        text: r.review,
+        date: r.createdAt,
+        reviewer: orderMap[r.orderId?.toString()] || 'Buyer'
+      }));
+
     const ratingsOverview = {
       average: avgRating,
       total: ratings.length,
       distribution: ratingDistribution,
+      recentReviews,
     };
 
     // ── 8. Top Buyers (by order value) ──
