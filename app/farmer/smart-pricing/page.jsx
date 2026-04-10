@@ -78,7 +78,7 @@ export default function SmartPricingPage() {
     </div>
   );
 
-  const { weather, cropAnalysis, advisory } = data;
+  const { weather, cropAnalysis, advisory, aiInsights } = data;
 
   const getAdvisoryClass = () => {
     if (weather.type === 'heavy_rain') return styles.danger;
@@ -132,6 +132,82 @@ export default function SmartPricingPage() {
         <div className={`${styles.advisory} ${getAdvisoryClass()}`}>
           {advisory}
         </div>
+
+        {/* AI-Powered Insights Panel */}
+        {aiInsights && (
+          <div className={styles.aiPanel}>
+            <div className={styles.aiHeader}>
+              <div className={styles.aiHeaderLeft}>
+                <span className={styles.aiIcon}>🤖</span>
+                <div>
+                  <h3 className={styles.aiTitle}>AI Market Advisor</h3>
+                  <p className={styles.aiSub}>Powered by real-time weather + mandi data</p>
+                </div>
+              </div>
+              <span className={styles.aiBadge}>✨ AI</span>
+            </div>
+
+            {/* Overall Outlook */}
+            {aiInsights.overallOutlook && (
+              <div className={styles.aiOutlook}>
+                <p>{aiInsights.overallOutlook}</p>
+              </div>
+            )}
+
+            {/* Top Action */}
+            {aiInsights.topAction && (
+              <div className={styles.aiTopAction}>
+                <span className={styles.aiTopActionIcon}>⚡</span>
+                <div>
+                  <div className={styles.aiTopActionLabel}>Today's Top Action</div>
+                  <div className={styles.aiTopActionText}>{aiInsights.topAction}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Sell Strategy */}
+            {aiInsights.sellStrategy && aiInsights.sellStrategy.length > 0 && (
+              <div className={styles.aiStrategyWrap}>
+                <h4 className={styles.aiStrategyTitle}>📊 Crop-wise Sell Strategy</h4>
+                <div className={styles.aiStrategyGrid}>
+                  {aiInsights.sellStrategy.map((s, i) => (
+                    <div key={i} className={styles.aiStrategyCard}>
+                      <div className={styles.aiStrategyCrop}>{s.crop}</div>
+                      <div className={`${styles.aiStrategyAction} ${
+                        s.action?.toLowerCase().includes('sell') ? styles.aiSell :
+                        s.action?.toLowerCase().includes('hold') ? styles.aiHold :
+                        styles.aiWait
+                      }`}>
+                        {s.action}
+                      </div>
+                      <p className={styles.aiStrategyReason}>{s.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Risk Alerts + Week Ahead */}
+            <div className={styles.aiFooterRow}>
+              {aiInsights.riskAlerts && aiInsights.riskAlerts.length > 0 && (
+                <div className={styles.aiRiskAlerts}>
+                  <h4>⚠️ Risk Alerts</h4>
+                  <ul>
+                    {aiInsights.riskAlerts.map((alert, i) => (
+                      <li key={i}>{alert}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {aiInsights.weekAheadTip && (
+                <div className={styles.aiWeekAhead}>
+                  <h4>📅 Week Ahead</h4>
+                  <p>{aiInsights.weekAheadTip}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* 7-Day Forecast Strip */}
         <div className={styles.forecastStrip}>

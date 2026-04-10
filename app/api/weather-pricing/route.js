@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { BASE_PRICES } from '@/lib/mandiData';
+import { groq } from '@/lib/groq';
 
 // WMO weather codes → human-readable condition + type
 const WMO_CODES = {
@@ -185,6 +186,57 @@ export async function GET(request) {
       advisory = `✅ Normal weather in ${regionName}. Follow your standard crop management practices.`;
     }
 
+    // --- AI-Powered Insights via Groq ---
+    let aiInsights = null;
+
+    if (groq) {
+      try {
+        const cropSummary = cropAnalysis.map(c =>
+          `${c.crop}: base ₹${c.basePrice}/q, adjusted ₹${c.adjustedPrice}/q (${c.priceImpactPct > 0 ? '+' : ''}${c.priceImpactPct}%), recommendation: ${c.sellRecommendation}`
+        ).join('\n');
+
+        const aiResponse = await groq.chat.completions.create({
+          model: 'llama-3.3-70b-versatile',
+          max_tokens: 600,
+          messages: [
+            {
+              role: 'user',
+              content: `You are a senior agricultural advisor for Indian farmers. Given real-time weather and mandi price data, provide actionable advice.
+
+WEATHER:
+- Location: ${regionName}
+- Condition: ${wmoInfo.condition} (${weatherType})
+- Temperature: ${Math.round(current.temperature)}°C
+- Humidity: ${humidity}%
+- Precipitation: ${precipitation}mm
+- Wind: ${Math.round(windSpeed)} km/h
+
+CROP PRICE ANALYSIS:
+${cropSummary}
+
+Respond ONLY with a JSON object (no markdown, no explanation):
+{
+  "overallOutlook": "1-2 sentence summary of market + weather conditions for farmers in simple Hindi-English mix",
+  "topAction": "The single most important thing a farmer should do TODAY (max 12 words)",
+  "sellStrategy": [
+    {"crop": "CropName", "action": "Sell now / Hold / Wait", "reason": "10-15 word reason in plain farmer language"}
+  ],
+  "riskAlerts": ["Short risk alert 1", "Short risk alert 2"],
+  "weekAheadTip": "What to expect this week in 1 sentence"
+}`
+            },
+          ],
+        });
+
+        const raw = aiResponse.choices[0].message.content;
+        aiInsights = JSON.parse(raw.replace(/```json|```/g, '').trim());
+      } catch (e) {
+        console.error('Groq weather-pricing AI error:', e.message);
+        // AI failure is non-fatal — page works without it
+        aiInsights = null;
+      }
+    }
+
     return NextResponse.json({
       weather: {
         condition: wmoInfo.condition,
@@ -201,6 +253,7 @@ export async function GET(request) {
       cropAnalysis,
       lastUpdated: new Date().toISOString(),
       advisory,
+      aiInsights,
       coordinates: { lat: parseFloat(lat), lon: parseFloat(lon) },
     });
   } catch (err) {

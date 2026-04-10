@@ -382,6 +382,296 @@
 .impactFill.negative { background: linear-gradient(90deg, #ef5350, #e53935); }
 .impactFill.neutral { background: linear-gradient(90deg, #bdbdbd, #9e9e9e); }
 
+/* ========================================
+   AI Market Advisor Panel
+   ======================================== */
+
+.aiPanel {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f7ff 40%, #f0f4ff 100%);
+  border: 1px solid #e0e0f0;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 24px rgba(80, 60, 120, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.aiPanel::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.aiPanel::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: -30px;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.aiHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.aiHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.aiIcon {
+  font-size: 2rem;
+  line-height: 1;
+  animation: aiPulse 2s ease-in-out infinite;
+}
+
+@keyframes aiPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.aiTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--soil);
+  margin-bottom: 0.1rem;
+}
+
+.aiSub {
+  font-size: 0.75rem;
+  color: var(--bark);
+  opacity: 0.7;
+}
+
+.aiBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #7c3aed;
+  background: linear-gradient(135deg, #ede9fe, #e0e7ff);
+  border: 1px solid #c4b5fd;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+/* Outlook */
+.aiOutlook {
+  background: linear-gradient(135deg, #fefce8, #fff7ed);
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.aiOutlook p {
+  font-size: 0.95rem;
+  color: #78350f;
+  font-weight: 500;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Top Action */
+.aiTopAction {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+  border: 1px solid #86efac;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.aiTopActionIcon {
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.aiTopActionLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #15803d;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.15rem;
+}
+
+.aiTopActionText {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #14532d;
+  line-height: 1.3;
+}
+
+/* Sell Strategy */
+.aiStrategyWrap {
+  margin-bottom: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.aiStrategyTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--soil);
+  margin-bottom: 0.75rem;
+}
+
+.aiStrategyGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.aiStrategyCard {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0ece6;
+  text-align: center;
+}
+
+.aiStrategyCrop {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--soil);
+  margin-bottom: 0.5rem;
+}
+
+.aiStrategyAction {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.aiSell {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.aiHold {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fde68a;
+}
+
+.aiWait {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.aiStrategyReason {
+  font-size: 0.78rem;
+  color: var(--bark);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Risk + Week Ahead footer row */
+.aiFooterRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.aiRiskAlerts {
+  background: linear-gradient(135deg, #fff7ed, #fef3c7);
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.aiRiskAlerts h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #9a3412;
+  margin-bottom: 0.5rem;
+}
+
+.aiRiskAlerts ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.aiRiskAlerts li {
+  font-size: 0.82rem;
+  color: #92400e;
+  padding: 0.25rem 0;
+  padding-left: 1rem;
+  position: relative;
+  line-height: 1.4;
+}
+
+.aiRiskAlerts li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #f97316;
+  font-weight: 700;
+}
+
+.aiWeekAhead {
+  background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+  border: 1px solid #93c5fd;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.aiWeekAhead h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1e40af;
+  margin-bottom: 0.5rem;
+}
+
+.aiWeekAhead p {
+  font-size: 0.85rem;
+  color: #1e3a5f;
+  line-height: 1.5;
+  margin: 0;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .weatherCard {
@@ -393,10 +683,23 @@
   .forecastStrip {
     grid-template-columns: repeat(4, 1fr);
   }
+  .aiStrategyGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .aiFooterRow {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {
   .forecastStrip {
     grid-template-columns: repeat(3, 1fr);
   }
+  .aiStrategyGrid {
+    grid-template-columns: 1fr;
+  }
+  .aiPanel {
+    padding: 1.25rem;
+  }
 }
+
