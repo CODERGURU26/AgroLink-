@@ -12,6 +12,7 @@ export default function BuyerTrackOrder() {
   const params = useParams();
   const [order, setOrder] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!loading && (!user || user.role !== 'buyer')) router.push('/login');
@@ -19,10 +20,33 @@ export default function BuyerTrackOrder() {
 
   useEffect(() => {
     if (!user) return;
-    fetch(`/api/orders/${params.orderId}`).then(r => r.json()).then(setOrder).catch(() => {});
+    fetch(`/api/orders/${params.orderId}`)
+      .then(r => r.json())
+      .then((data) => {
+        if (data?.error) {
+          setError(data.error);
+          setOrder(null);
+          return;
+        }
+        setError('');
+        setOrder(data);
+      })
+      .catch(() => setError('Unable to load order details.'));
   }, [user, params.orderId]);
 
-  if (loading || !user || !order) return null;
+  if (loading || !user) return null;
+  if (error) return <div className="page-container"><div className="card">{error}</div></div>;
+  if (!order) return null;
+  const steps = Array.isArray(order.supplyChainSteps) ? order.supplyChainSteps : [];
+
+  const handleCopyTraceLink = async () => {
+    if (!order?.traceability?.traceLink) return;
+    try {
+      await navigator.clipboard.writeText(order.traceability.traceLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {}
+  };
 
   const handleCopyTraceLink = async () => {
     if (!order?.traceability?.traceLink) return;
@@ -54,7 +78,7 @@ export default function BuyerTrackOrder() {
         </div>
 
         <SupplyChainTracker 
-          steps={order.supplyChainSteps} 
+          steps={steps} 
           readOnly={true} // Buyer only views tracking, farmer/logistics updates it
         />
 
@@ -103,7 +127,7 @@ export default function BuyerTrackOrder() {
           </div>
         </div>
 
-        {order.supplyChainSteps[4].status === 'complete' && order.paymentStatus === 'pending' && (
+        {steps[4]?.status === 'complete' && order.paymentStatus === 'pending' && (
           <div style={{ marginTop: '2.5rem', textAlign: 'center', background: 'rgba(212, 140, 45, 0.1)', padding: '1.5rem', borderRadius: '12px', border: '1px dashed var(--harvest)' }}>
             <p style={{ marginBottom: '1rem', color: 'var(--soil)' }}>
               🚚 <strong>Delivery Complete!</strong> Please inspect the produce and release payment to the farmer.

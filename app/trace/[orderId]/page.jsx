@@ -7,12 +7,26 @@ import SupplyChainTracker from '@/components/SupplyChainTracker/SupplyChainTrack
 export default function PublicTracePage() {
   const params = useParams();
   const [order, setOrder] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch(`/api/orders/${params.orderId}`).then((r) => r.json()).then(setOrder).catch(() => {});
+    fetch(`/api/orders/${params.orderId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.error) {
+          setError(data.error);
+          setOrder(null);
+          return;
+        }
+        setError('');
+        setOrder(data);
+      })
+      .catch(() => setError('Unable to load trace details.'));
   }, [params.orderId]);
 
+  if (error) return <div className="page-container"><div className="card">{error}</div></div>;
   if (!order) return null;
+  const steps = Array.isArray(order.supplyChainSteps) ? order.supplyChainSteps : [];
 
   return (
     <div className="page-container">
@@ -31,7 +45,7 @@ export default function PublicTracePage() {
           </p>
         </div>
 
-        <SupplyChainTracker steps={order.supplyChainSteps} readOnly />
+        <SupplyChainTracker steps={steps} readOnly />
       </div>
     </div>
   );

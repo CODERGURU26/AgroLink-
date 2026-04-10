@@ -13,13 +13,25 @@ export default function FarmerTrackOrder() {
   const [order, setOrder] = useState(null);
   const [copied, setCopied] = useState(false);
   const [poolFarmers, setPoolFarmers] = useState(3);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!loading && (!user || user.role !== 'farmer')) router.push('/login');
   }, [user, loading, router]);
 
   const fetchOrder = () => {
-    fetch(`/api/orders/${params.orderId}`).then(r => r.json()).then(setOrder).catch(() => {});
+    fetch(`/api/orders/${params.orderId}`)
+      .then(r => r.json())
+      .then((data) => {
+        if (data?.error) {
+          setError(data.error);
+          setOrder(null);
+          return;
+        }
+        setError('');
+        setOrder(data);
+      })
+      .catch(() => setError('Unable to load order details.'));
   };
 
   useEffect(() => { if (user) fetchOrder(); }, [user, params.orderId]);
@@ -37,8 +49,8 @@ export default function FarmerTrackOrder() {
     if (!order) return;
     const transitStepIdx = 3;
     const deliveryStepIdx = 4;
-    
-    if (order.supplyChainSteps[transitStepIdx].status === 'active') {
+    const steps = Array.isArray(order.supplyChainSteps) ? order.supplyChainSteps : [];
+    if (steps[transitStepIdx]?.status === 'active') {
       await handleAdvance(transitStepIdx);
       setTimeout(() => handleAdvance(deliveryStepIdx), 3000);
     }
@@ -53,7 +65,10 @@ export default function FarmerTrackOrder() {
     } catch {}
   };
 
-  if (loading || !user || !order) return null;
+  if (loading || !user) return null;
+  if (error) return <div className="page-container"><div className="card">{error}</div></div>;
+  if (!order) return null;
+  const steps = Array.isArray(order.supplyChainSteps) ? order.supplyChainSteps : [];
   const estimatedSoloFreight = Math.max(400, order.quantity * 40);
   const pooledFreight = Math.round(estimatedSoloFreight / Math.max(poolFarmers, 1));
 
@@ -77,7 +92,7 @@ export default function FarmerTrackOrder() {
         </div>
 
         <SupplyChainTracker 
-          steps={order.supplyChainSteps} 
+          steps={steps} 
           onAdvance={handleAdvance}
           readOnly={false} 
         />
@@ -129,7 +144,7 @@ export default function FarmerTrackOrder() {
           </div>
         </div>
 
-        {order.supplyChainSteps[3].status === 'active' && (
+        {steps[3]?.status === 'active' && (
           <div style={{ marginTop: '2rem', textAlign: 'center', background: '#e8f4fd', padding: '1.5rem', borderRadius: '12px' }}>
             <p style={{ marginBottom: '1rem', color: '#2980b9', fontSize: '0.9rem' }}>
               🚚 <em>Demo action: Simulate logistics partner updating the transit status.</em>
