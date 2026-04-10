@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import dbConnect from '@/lib/mongodb';
 import Order from '@/lib/models/Order';
 import { addActivity } from '@/lib/activityServer';
@@ -6,6 +7,9 @@ import { getFairPricingInsight } from '@/lib/fairPricing';
 
 export async function GET(request, { params }) {
   try {
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json({ error: 'Invalid order id' }, { status: 400 });
+    }
     await dbConnect();
     const order = await Order.findById(params.id);
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
@@ -13,8 +17,9 @@ export async function GET(request, { params }) {
     const traceLink = `${origin}/trace/${order._id}`;
     const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(traceLink)}`;
     const fairPricing = getFairPricingInsight(order);
-    const completedSteps = order.supplyChainSteps.filter((step) => step.status === 'complete').length;
-    const stepCompletionRatio = order.supplyChainSteps.length ? completedSteps / order.supplyChainSteps.length : 0;
+    const steps = Array.isArray(order.supplyChainSteps) ? order.supplyChainSteps : [];
+    const completedSteps = steps.filter((step) => step.status === 'complete').length;
+    const stepCompletionRatio = steps.length ? completedSteps / steps.length : 0;
     const qualityBoost = order.grade === 'A' ? 8 : order.grade === 'B' ? 4 : 0;
     const onTimeBoost = order.status === 'completed' ? 10 : order.status === 'in_progress' ? 5 : 0;
     const trustScore = Math.min(98, Math.round(60 + stepCompletionRatio * 25 + qualityBoost + onTimeBoost));
@@ -43,6 +48,9 @@ export async function GET(request, { params }) {
 
 export async function PATCH(request, { params }) {
   try {
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json({ error: 'Invalid order id' }, { status: 400 });
+    }
     await dbConnect();
     const body = await request.json();
 
