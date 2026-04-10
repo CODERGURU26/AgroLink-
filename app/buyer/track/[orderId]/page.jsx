@@ -48,6 +48,15 @@ export default function BuyerTrackOrder() {
     } catch {}
   };
 
+  const handleCopyTraceLink = async () => {
+    if (!order?.traceability?.traceLink) return;
+    try {
+      await navigator.clipboard.writeText(order.traceability.traceLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {}
+  };
+
   return (
     <div className="page-container">
       <div className="card">
