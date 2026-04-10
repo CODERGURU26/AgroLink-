@@ -10,9 +10,9 @@ const farmerLinks = [
   { href: '/farmer/dashboard', label: 'Dashboard' },
   { href: '/farmer/my-listings', label: 'My Listings' },
   { href: '/farmer/orders', label: 'Orders' },
-  { href: '/farmer/payments', label: 'Payments' },
+  { href: '/farmer/smart-pricing', label: '🌦️ Pricing' },
   { href: '/farmer/analytics', label: 'Analytics' },
-  { href: '/farmer/skills', label: 'Skills & Jobs' },
+  { href: '/community', label: 'Community' },
 ];
 
 const buyerLinks = [
@@ -20,6 +20,7 @@ const buyerLinks = [
   { href: '/buyer/browse', label: 'Browse Produce' },
   { href: '/buyer/market-prices', label: 'Market Prices' },
   { href: '/buyer/orders', label: 'Orders' },
+  { href: '/community', label: 'Community' },
 ];
 
 export default function Navbar() {

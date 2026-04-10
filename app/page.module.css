@@ -21,30 +21,76 @@
   pointer-events: none;
 }
 
+/* Floating particles */
+.heroParticles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.heroParticles::before,
+.heroParticles::after {
+  content: '🌾';
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.08;
+  animation: floatParticle 20s linear infinite;
+}
+
+.heroParticles::before {
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.heroParticles::after {
+  content: '🌿';
+  right: 15%;
+  animation-delay: -10s;
+  font-size: 1.5rem;
+}
+
+@keyframes floatParticle {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.08; }
+  90% { opacity: 0.08; }
+  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+
 .wheat {
   font-size: 4rem;
   margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .title {
   font-size: 3.2rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--soil);
-  line-height: 1.2;
+  line-height: 1.15;
   max-width: 700px;
   margin: 0;
+  position: relative;
+  z-index: 1;
+  letter-spacing: -0.02em;
 }
 
 .title span {
-  color: var(--leaf);
+  background: linear-gradient(135deg, var(--leaf) 0%, #5a9a4e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .subtitle {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: var(--bark);
   max-width: 560px;
   margin: 1.25rem auto 2.75rem;
   line-height: 1.7;
+  position: relative;
+  z-index: 1;
 }
 
 .roleButtons {
@@ -52,6 +98,8 @@
   gap: 2rem;
   flex-wrap: wrap;
   justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 
 .roleBtn {
@@ -59,17 +107,20 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  background: var(--white);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding: 2.25rem 2.75rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px var(--shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   min-width: 220px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .roleBtn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 36px var(--shadow-hover);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px var(--shadow-hover);
 }
 
 .roleBtn .emoji {
@@ -108,8 +159,9 @@
 
 .statItem h3 {
   font-size: 2.2rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--harvest);
+  letter-spacing: -0.02em;
 }
 
 .statItem p {
@@ -130,8 +182,9 @@
   font-size: 2.2rem;
   color: var(--soil);
   margin-bottom: 2.5rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.3;
+  letter-spacing: -0.02em;
 }
 
 .howCards {
@@ -145,19 +198,25 @@
 
 .howCard {
   background: var(--white);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 2rem;
   flex: 1;
   min-width: 220px;
   max-width: 280px;
-  box-shadow: 0 2px 12px var(--shadow);
+  box-shadow: 0 2px 16px var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.howCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px var(--shadow-hover);
 }
 
 .howCard .step {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: var(--leaf);
+  background: linear-gradient(135deg, var(--leaf), #5a9a4e);
   color: var(--white);
   display: flex;
   align-items: center;
@@ -165,6 +224,7 @@
   font-weight: 700;
   font-size: 1.1rem;
   margin: 0 auto 1rem;
+  box-shadow: 0 4px 12px rgba(74, 124, 63, 0.3);
 }
 
 .howCard h3 {
@@ -177,6 +237,74 @@
 
 .howCard p {
   font-size: 0.95rem;
+  color: var(--bark);
+  line-height: 1.6;
+}
+
+/* Features Section */
+.featuresSection {
+  padding: 5rem 2rem;
+  background: var(--cream);
+  text-align: center;
+}
+
+.featuresSection h2 {
+  font-size: 2.2rem;
+  color: var(--soil);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.featuresSubtitle {
+  color: var(--bark);
+  font-size: 1.05rem;
+  margin-bottom: 3rem;
+}
+
+.featGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.featCard {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 2rem 1.75rem;
+  text-align: left;
+  box-shadow: 0 2px 16px var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-top: 4px solid transparent;
+}
+
+.featCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px var(--shadow-hover);
+}
+
+.feat1 { border-top-color: var(--leaf); }
+.feat2 { border-top-color: var(--harvest); }
+.feat3 { border-top-color: var(--sky); }
+.feat4 { border-top-color: #9C27B0; }
+.feat5 { border-top-color: var(--danger); }
+
+.featIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.featCard h3 {
+  font-size: 1.15rem;
+  color: var(--soil);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.featCard p {
+  font-size: 0.9rem;
   color: var(--bark);
   line-height: 1.6;
 }
@@ -237,6 +365,8 @@
   font-size: 1rem;
   color: var(--bark);
   line-height: 1.6;
+  position: relative;
+  z-index: 1;
 }
 
 .loginLink a {
@@ -249,4 +379,5 @@
   .title { font-size: 2.2rem; }
   .statsStrip { flex-wrap: wrap; gap: 1.5rem; }
   .statItem h3 { font-size: 1.6rem; }
+  .featGrid { grid-template-columns: 1fr; }
 }

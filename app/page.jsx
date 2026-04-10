@@ -1,15 +1,52 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import WaveDivider from '@/components/WaveDivider/WaveDivider';
 import styles from './page.module.css';
 
+function AnimatedCounter({ end, suffix = '', prefix = '' }) {
+  const [value, setValue] = useState(0);
+  const ref = useRef(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (end === 0 || hasAnimated.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          const duration = 1800;
+          const start = Date.now();
+          const animate = () => {
+            const elapsed = Date.now() - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setValue(Math.round(end * eased));
+            if (progress < 1) requestAnimationFrame(animate);
+          };
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [end]);
+
+  const displayVal = end >= 100000
+    ? `${prefix}${(value / 100000).toFixed(value >= 100000 ? 1 : 0)}L${suffix}`
+    : `${prefix}${value.toLocaleString('en-IN')}${suffix}`;
+
+  return <h3 ref={ref}>{end === 0 ? '—' : displayVal}</h3>;
+}
+
 export default function LandingPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const [stats, setStats] = useState(null);
 
   useEffect(() => {
     if (user) router.push(`/${user.role}/dashboard`);
@@ -17,12 +54,14 @@ export default function LandingPage() {
 
   useEffect(() => {
     fetch('/api/seed').catch(() => {});
+    fetch('/api/stats').then(r => r.json()).then(setStats).catch(() => {});
   }, []);
 
   return (
     <>
       {/* Hero */}
       <section className={styles.hero}>
+        <div className={styles.heroParticles}></div>
         <div className={styles.wheat}>🌾AgroLink</div>
         <h1 className={styles.title}>
           <span>Fair deals, straight from the field</span>
@@ -50,22 +89,22 @@ export default function LandingPage() {
         </p>
       </section>
 
-      {/* Stats Strip */}
+      {/* Stats Strip — Real Data */}
       <section className={styles.statsStrip}>
         <div className={styles.statItem}>
-          <h3>2,400+</h3>
+          <AnimatedCounter end={stats?.farmers || 0} suffix="+" />
           <p>Farmers Onboarded</p>
         </div>
         <div className={styles.statItem}>
-          <h3>₹12Cr+</h3>
+          <AnimatedCounter end={stats?.tradeValue || 0} prefix="₹" />
           <p>Direct Trade Value</p>
         </div>
         <div className={styles.statItem}>
-          <h3>850+</h3>
+          <AnimatedCounter end={stats?.buyers || 0} suffix="+" />
           <p>Verified Buyers</p>
         </div>
         <div className={styles.statItem}>
-          <h3>18</h3>
+          <AnimatedCounter end={stats?.states || 0} />
           <p>States Covered</p>
         </div>
       </section>
@@ -98,6 +137,34 @@ export default function LandingPage() {
       {/* Wave Divider */}
       <WaveDivider color="var(--cream)" bg="var(--mist)" />
 
+      {/* Innovative Features Showcase */}
+      <section className={styles.featuresSection}>
+        <h2>What makes AgroLink different</h2>
+        <p className={styles.featuresSubtitle}>Real tools, real data — built for Indian farmers</p>
+        <div className={styles.featGrid}>
+          <div className={`${styles.featCard} ${styles.feat1}`}>
+            <div className={styles.featIcon}>🌦️</div>
+            <h3>Weather-Smart Pricing</h3>
+            <p>Live weather from your location combined with mandi prices — tells you exactly when to sell each crop for maximum profit.</p>
+          </div>
+          <div className={`${styles.featCard} ${styles.feat2}`}>
+            <div className={styles.featIcon}>⭐</div>
+            <h3>Farmer Trust Score</h3>
+            <p>Build your reputation from real transactions. Higher scores unlock microfinance pre-approval, crop insurance discounts, and priority placement.</p>
+          </div>
+          <div className={`${styles.featCard} ${styles.feat3}`}>
+            <div className={styles.featIcon}>🎙️</div>
+            <h3>Voice-First Community</h3>
+            <p>Post farming tips using voice — no typing needed. Auto-transcription and category tagging for a truly inclusive forum.</p>
+          </div>
+          <div className={`${styles.featCard} ${styles.feat4}`}>
+            <div className={styles.featIcon}>🗺️</div>
+            <h3>Live Journey Tracking</h3>
+            <p>Animated map tracks produce from farm to buyer with carbon footprint calculation and real-time freshness scoring.</p>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
@@ -110,6 +177,7 @@ export default function LandingPage() {
             <Link href="/farmer/register">Register as Farmer</Link>
             <Link href="/buyer/register">Register as Buyer</Link>
             <Link href="/login">Login</Link>
+            <Link href="/community">Community Hub</Link>
           </div>
           <div className={styles.footerCol}>
             <h4>Contact</h4>

@@ -42,7 +42,7 @@ export default function FarmerRegister() {
     <div className={styles.authPage}>
       <form className={styles.authCard} onSubmit={handleSubmit}>
         <h1>🧑‍🌾 Register as Farmer</h1>
-        <p className={styles.subtitle}>Join 2,400+ farmers getting fair deals</p>
+        <p className={styles.subtitle}>Join farmers across India getting fair deals</p>
 
         {error && <div className={styles.error}>{error}</div>}
 

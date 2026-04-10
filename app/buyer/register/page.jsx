@@ -35,7 +35,7 @@ export default function BuyerRegister() {
     <div className={styles.authPage}>
       <form className={styles.authCard} onSubmit={handleSubmit}>
         <h1>🏪 Register as Buyer</h1>
-        <p className={styles.subtitle}>Source fresh produce directly from 2,400+ farmers</p>
+        <p className={styles.subtitle}>Source fresh produce directly from verified farmers</p>
 
         {error && <div className={styles.error}>{error}</div>}
 

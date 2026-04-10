@@ -66,6 +66,7 @@ export default function BuyerDashboard() {
           <Link href="/buyer/browse" className="btn-primary">Browse Produce</Link>
           <Link href="/buyer/orders" className="btn-secondary">My Orders</Link>
           <Link href="/buyer/market-prices" className="btn-secondary">Market Prices</Link>
+          <Link href="/community" className="btn-secondary">🌾 Community Hub</Link>
         </div>
 
         <h3 className={styles.sectionTitle}>Recent Activity</h3>

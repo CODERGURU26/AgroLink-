@@ -97,6 +97,25 @@ export default function FarmerDashboard() {
           <Link href="/farmer/skills" className="btn-secondary">Browse Skill Courses</Link>
         </div>
 
+        <h3 className={styles.sectionTitle} style={{ marginTop: '2rem' }}>🚀 Smart Tools</h3>
+        <div className="grid-3">
+          <Link href="/farmer/trust-score" className="card" style={{ textDecoration: 'none', textAlign: 'center', cursor: 'pointer', borderLeft: '4px solid var(--harvest)' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>⭐</div>
+            <h4 style={{ color: 'var(--soil)', marginBottom: '0.3rem', fontSize: '1rem' }}>Trust Score</h4>
+            <p style={{ color: 'var(--bark)', fontSize: '0.82rem' }}>Your reputation credit profile</p>
+          </Link>
+          <Link href="/farmer/smart-pricing" className="card" style={{ textDecoration: 'none', textAlign: 'center', cursor: 'pointer', borderLeft: '4px solid var(--sky)' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🌦️</div>
+            <h4 style={{ color: 'var(--soil)', marginBottom: '0.3rem', fontSize: '1rem' }}>Smart Pricing</h4>
+            <p style={{ color: 'var(--bark)', fontSize: '0.82rem' }}>Live weather-aware price insights</p>
+          </Link>
+          <Link href="/community" className="card" style={{ textDecoration: 'none', textAlign: 'center', cursor: 'pointer', borderLeft: '4px solid #9C27B0' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🌾</div>
+            <h4 style={{ color: 'var(--soil)', marginBottom: '0.3rem', fontSize: '1rem' }}>Community Hub</h4>
+            <p style={{ color: 'var(--bark)', fontSize: '0.82rem' }}>Share tips, ask questions</p>
+          </Link>
+        </div>
+
         <h3 className={styles.sectionTitle} style={{ marginTop: '2rem' }}>Recent Orders</h3>
         {recentOrders.length === 0 ? (
           <div className="card" style={{ padding: '2rem', textAlign: 'center', color: 'var(--bark)' }}>

@@ -8,58 +8,71 @@
   padding: 0.85rem 2rem;
   background: var(--cream);
   border-bottom: 1px solid rgba(107, 79, 58, 0.12);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
+  transition: background 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
 }
 
 .navbar.scrolled {
-  background: var(--white);
-  box-shadow: 0 2px 16px var(--shadow);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 2px 20px var(--shadow);
+  border-bottom-color: transparent;
 }
 
 .logo {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--soil);
   display: flex;
   align-items: center;
   gap: 0.5rem;
   line-height: 1.3;
+  letter-spacing: -0.02em;
 }
 
 .logo span {
-  color: var(--leaf);
+  background: linear-gradient(135deg, var(--leaf), #5a9a4e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .navLinks {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.75rem;
   list-style: none;
 }
 
 .navLinks a {
   font-weight: 500;
-  font-size: 1rem;
+  font-size: 0.92rem;
   color: var(--bark);
-  padding: 0.5rem 0.6rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
   border-bottom: 2px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   line-height: 1.5;
 }
 
-.navLinks a:hover,
+.navLinks a:hover {
+  color: var(--leaf);
+  background: rgba(74, 124, 63, 0.06);
+}
+
 .navLinks a.active {
   color: var(--leaf);
   border-bottom-color: var(--leaf);
+  font-weight: 600;
 }
 
 .logoutBtn {
   background: var(--danger);
   color: var(--white);
-  padding: 0.55rem 1.2rem;
-  border-radius: 6px;
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   line-height: 1.5;
 }
@@ -108,10 +121,12 @@
     top: 56px;
     left: 0;
     right: 0;
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     flex-direction: column;
     padding: 1.5rem;
-    gap: 1rem;
+    gap: 0.5rem;
     box-shadow: 0 8px 24px var(--shadow);
     transform: translateY(-120%);
     transition: transform 0.3s ease;
@@ -120,5 +135,17 @@
 
   .navLinks.open {
     transform: translateY(0);
+  }
+
+  .navLinks a {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border-bottom: none;
+  }
+
+  .navLinks a.active {
+    background: rgba(74, 124, 63, 0.1);
+    border-bottom: none;
   }
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import SupplyChainTracker from '@/components/SupplyChainTracker/SupplyChainTracker';
+import JourneyMap from '@/components/JourneyMap/JourneyMap';
 
 export default function PublicTracePage() {
   const params = useParams();
@@ -45,6 +46,11 @@ export default function PublicTracePage() {
           </p>
         </div>
 
+        {/* Interactive Journey Map */}
+        <JourneyMap steps={steps} harvestDate={order.createdAt} orderId={order._id} farmerDistrict={order.farmerDistrict} buyerDistrict={order.buyerName} />
+
+        {/* Detailed Supply Chain Steps */}
+        <h3 style={{ fontSize: '1.1rem', color: 'var(--soil)', marginBottom: '1rem', marginTop: '0.5rem' }}>📋 Detailed Timeline</h3>
         <SupplyChainTracker steps={steps} readOnly />
       </div>
     </div>
