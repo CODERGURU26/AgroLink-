@@ -35,7 +35,7 @@ export async function POST(request) {
       batchId,
       supplyChainSteps: [
         { label: 'Harvested', status: 'complete', timestamp: new Date() },
-        { label: 'Quality Checked', status: 'pending', timestamp: null },
+        { label: 'Quality Checked', status: 'active', timestamp: null },
         { label: 'Packed & Loaded', status: 'pending', timestamp: null },
         { label: 'In Transit', status: 'pending', timestamp: null },
         { label: 'Delivered', status: 'pending', timestamp: null },

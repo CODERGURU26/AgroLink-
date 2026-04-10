@@ -41,7 +41,7 @@ export default function SupplyChainTracker({ steps, onAdvance, readOnly = false 
             </div>
             <span className={styles.label}>{step.label}</span>
             {step.timestamp && <span className={styles.timestamp}>{formatDate(step.timestamp)}</span>}
-            {!readOnly && step.status === 'active' && onAdvance && (
+            {!readOnly && onAdvance && (step.status === 'active' || (step.status === 'pending' && i > 0 && steps[i - 1].status === 'complete')) && (
               <button className={`btn-primary ${styles.actionBtn}`} onClick={() => onAdvance(i)}>
                 Mark {step.label}
               </button>

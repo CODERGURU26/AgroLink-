@@ -16,12 +16,18 @@ export default function FarmerOrders() {
     if (!loading && (!user || user.role !== 'farmer')) router.push('/login');
   }, [user, loading, router]);
 
-  useEffect(() => {
+  const fetchOrders = () => {
     if (!user) return;
     fetch(`/api/orders?farmerId=${user.id}`)
       .then(r => r.json())
       .then(setOrders)
       .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchOrders();
+    const interval = setInterval(fetchOrders, 15000);
+    return () => clearInterval(interval);
   }, [user]);
 
   const handleMarkPacked = async (orderId) => {
@@ -34,14 +40,37 @@ export default function FarmerOrders() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ advanceStep: nextStep }),
       });
-      const res = await fetch(`/api/orders?farmerId=${user.id}`);
-      setOrders(await res.json());
+      fetchOrders();
     }
   };
 
   if (loading || !user) return null;
 
-  const filtered = orders.filter(o => o.status === tab);
+  // Tab grouping:
+  // "Pending" = confirmed (paid, awaiting farmer action) + payment_pending
+  // "In Progress" = in_progress (packed/in transit)
+  // "Completed" = completed (delivered)
+  const tabFilter = (order) => {
+    if (tab === 'pending')     return order.status === 'confirmed' || order.status === 'pending' || order.status === 'payment_pending';
+    if (tab === 'in_progress') return order.status === 'in_progress';
+    if (tab === 'completed')   return order.status === 'completed';
+    return false;
+  };
+
+  const tabCount = (t) => {
+    if (t === 'pending')     return orders.filter(o => o.status === 'confirmed' || o.status === 'pending' || o.status === 'payment_pending').length;
+    if (t === 'in_progress') return orders.filter(o => o.status === 'in_progress').length;
+    if (t === 'completed')   return orders.filter(o => o.status === 'completed').length;
+    return 0;
+  };
+
+  const filtered = orders.filter(tabFilter);
+
+  const getStatusLabel = (status) => {
+    if (status === 'confirmed') return 'Paid — Awaiting Dispatch';
+    if (status === 'payment_pending') return 'Awaiting Payment';
+    return status;
+  };
 
   return (
     <div className="page-container">
@@ -52,7 +81,7 @@ export default function FarmerOrders() {
           <button key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
             {t === 'in_progress' ? 'In Progress' : t.charAt(0).toUpperCase() + t.slice(1)}
             <span style={{ marginLeft: '0.4rem', fontSize: '0.8rem', opacity: 0.6 }}>
-              ({orders.filter(o => o.status === t).length})
+              ({tabCount(t)})
             </span>
           </button>
         ))}
@@ -64,39 +93,59 @@ export default function FarmerOrders() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {filtered.map(order => (
-            <div key={order._id} className="card card-order">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
-                <div>
-                  <h3 style={{ fontSize: '1.05rem', color: 'var(--soil)' }}>{order.crop}</h3>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--bark)' }}>Buyer: {order.buyerName}</p>
+          {filtered.map(order => {
+            const totalAmount = order.totalAmount || (order.quantity * order.agreedPrice);
+            return (
+              <div key={order._id} className="card card-order">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
+                  <div>
+                    <h3 style={{ fontSize: '1.05rem', color: 'var(--soil)' }}>{order.crop}</h3>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--bark)' }}>Buyer: {order.buyerName}</p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column', alignItems: 'flex-end' }}>
+                    <StatusBadge status={getStatusLabel(order.status)} />
+                    {order.paymentStatus === 'paid' && (
+                      <span style={{
+                        background: '#d4edda', color: '#155724',
+                        padding: '2px 10px', borderRadius: '12px',
+                        fontSize: '0.75rem', fontWeight: 600,
+                      }}>
+                        ₹{totalAmount.toLocaleString('en-IN')} Paid
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <StatusBadge status={order.status} />
-              </div>
 
-              <div style={{ display: 'flex', gap: '2rem', fontSize: '0.9rem', color: 'var(--bark)', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
-                <span>Qty: <strong>{order.quantity}q</strong></span>
-                <span>Price: <strong>₹{order.agreedPrice?.toLocaleString('en-IN')}/q</strong></span>
-                <span>Date: {new Date(order.createdAt).toLocaleDateString('en-IN')}</span>
-              </div>
+                <div style={{ display: 'flex', gap: '2rem', fontSize: '0.9rem', color: 'var(--bark)', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+                  <span>Qty: <strong>{order.quantity}{order.unit === 'kg' ? 'kg' : 'q'}</strong></span>
+                  <span>Price: <strong>₹{order.agreedPrice?.toLocaleString('en-IN')}/{order.unit === 'kg' ? 'kg' : 'q'}</strong></span>
+                  <span>Total: <strong style={{ color: 'var(--leaf)' }}>₹{totalAmount.toLocaleString('en-IN')}</strong></span>
+                  <span>Date: {new Date(order.createdAt).toLocaleDateString('en-IN')}</span>
+                </div>
 
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {tab === 'pending' && (
-                  <button className="btn-primary" onClick={() => handleMarkPacked(order._id)} style={{ fontSize: '0.85rem' }}>
-                    📦 Mark as Packed & Ready
-                  </button>
-                )}
-                <Link href={`/farmer/track/${order._id}`} className="btn-secondary" style={{ fontSize: '0.85rem' }}>
-                  🔍 Track Shipment
-                </Link>
-                {tab === 'completed' && (
-                  <Link href={`/farmer/rate/${order._id}`} className="btn-secondary" style={{ fontSize: '0.85rem' }}>
-                    ⭐ Rate Buyer
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {tab === 'pending' && order.status === 'confirmed' && (
+                    <button className="btn-primary" onClick={() => handleMarkPacked(order._id)} style={{ fontSize: '0.85rem' }}>
+                      📦 Mark as Packed & Ready
+                    </button>
+                  )}
+                  {tab === 'pending' && order.status === 'payment_pending' && (
+                    <span style={{ fontSize: '0.85rem', color: 'var(--harvest)', fontWeight: 600, padding: '0.5rem 0' }}>
+                      ⏳ Waiting for buyer payment…
+                    </span>
+                  )}
+                  <Link href={`/farmer/track/${order._id}`} className="btn-secondary" style={{ fontSize: '0.85rem' }}>
+                    🔍 Track Shipment
                   </Link>
-                )}
+                  {tab === 'completed' && (
+                    <Link href={`/farmer/rate/${order._id}`} className="btn-secondary" style={{ fontSize: '0.85rem' }}>
+                      ⭐ Rate Buyer
+                    </Link>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

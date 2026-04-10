@@ -10,24 +10,36 @@ export default function BuyerListingDetail() {
   const router = useRouter();
   const params = useParams();
   const [listing, setListing] = useState(null);
-  const [farmer, setFarmer] = useState(null);
   const [form, setForm] = useState({ price: '', quantity: '', message: '' });
   const [modal, setModal] = useState(null);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
 
+  // Auth guard
   useEffect(() => {
     if (!loading && (!user || user.role !== 'buyer')) router.push('/login');
   }, [user, loading, router]);
+
+  // Load Razorpay checkout script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      if (document.body.contains(script)) document.body.removeChild(script);
+    };
+  }, []);
 
   const fetchListing = async () => {
     const res = await fetch(`/api/listings/${params.id}`);
     const data = await res.json();
     setListing(data);
-    
-    // In a real app we'd have an API to fetch standard farmer profile, but we'll fetch mock ratings logic here
   };
 
   useEffect(() => { if (user) fetchListing(); }, [user, params.id]);
 
+  // ── Make offer (unchanged) ────────────────────────────────────────────────
   const handleMakeOffer = async (e) => {
     e.preventDefault();
     await fetch(`/api/listings/${params.id}/bid`, {
@@ -38,37 +50,87 @@ export default function BuyerListingDetail() {
         buyerName: user.businessName,
         offeredPrice: Number(form.price),
         quantity: Number(form.quantity),
-        message: form.message
-      })
+        message: form.message,
+      }),
     });
     setModal('offer_success');
     fetchListing();
   };
 
-  const handleDirectBuy = async () => {
-    await fetch('/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        listingId: listing._id,
-        farmerId: listing.farmerId,
-        buyerId: user.id,
-        farmerName: listing.farmerName,
-        buyerName: user.businessName,
-        crop: listing.crop,
-        quantity: listing.quantity, // buying full quantity for direct buy
-        agreedPrice: listing.price,
-        farmerDistrict: listing.farmerDistrict,
-      }),
-    });
-    
-    await fetch(`/api/listings/${params.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: 'sold' }),
-    });
+  // ── Razorpay Buy Now ──────────────────────────────────────────────────────
+  const handleBuyNow = async () => {
+    setPaymentLoading(true);
+    setPaymentError(null);
 
-    setModal('buy_success');
+    try {
+      // 1. Create Razorpay order on server
+      const res = await fetch('/api/payment/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          listingId: listing._id,
+          quantity: listing.quantity,
+          buyerId: user.id,
+          buyerName: user.businessName,
+        }),
+      });
+      const { success, data, error } = await res.json();
+      if (!success) throw new Error(error);
+
+      // 2. Open Razorpay checkout
+      const options = {
+        key: data.keyId,
+        amount: data.amount,
+        currency: data.currency,
+        order_id: data.razorpayOrderId,
+        name: 'AgroLink',
+        description: data.description,
+        prefill: data.prefill,
+        theme: {
+          color: '#4A7C3F',
+        },
+        handler: async (response) => {
+          // 3. Verify payment on server
+          const verifyRes = await fetch('/api/payment/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              orderId: data.orderId,
+              paymentMethod: response.razorpay_payment_method || null,
+            }),
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyData.success) {
+            // 4. Show existing success modal
+            setPaymentLoading(false);
+            setModal('buy_success');
+          } else {
+            setPaymentLoading(false);
+            setPaymentError('Payment verification failed. Please contact support.');
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setPaymentLoading(false);
+            setPaymentError('Payment was cancelled.');
+          },
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.on('payment.failed', (response) => {
+        setPaymentLoading(false);
+        setPaymentError(`Payment failed: ${response.error.description}`);
+      });
+      razorpay.open();
+
+    } catch (err) {
+      setPaymentError(err.message || 'Something went wrong. Please try again.');
+      setPaymentLoading(false);
+    }
   };
 
   if (loading || !user || !listing) return null;
@@ -115,9 +177,21 @@ export default function BuyerListingDetail() {
               <p style={{ color: 'var(--danger)', fontWeight: 600 }}>This listing is no longer available.</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <button className="btn-primary" onClick={handleDirectBuy} style={{ padding: '1rem' }}>
-                  Buy Now at Asking Price
+                <button
+                  className="btn-primary"
+                  onClick={handleBuyNow}
+                  disabled={paymentLoading}
+                  style={{ padding: '1rem', opacity: paymentLoading ? 0.7 : 1, cursor: paymentLoading ? 'wait' : 'pointer' }}
+                >
+                  {paymentLoading ? 'Preparing payment…' : 'Buy Now at Asking Price'}
                 </button>
+
+                {paymentError && (
+                  <p style={{ color: 'var(--danger)', fontSize: '13px', marginTop: '-4px', textAlign: 'center' }}>
+                    {paymentError}
+                  </p>
+                )}
+
                 <div style={{ textAlign: 'center', color: 'var(--bark)', fontSize: '0.9rem' }}>— OR —</div>
                 <button className="btn-secondary" onClick={() => setModal('offer')}>
                   Make a Counter Offer
@@ -128,11 +202,12 @@ export default function BuyerListingDetail() {
         </div>
       </div>
 
+      {/* ── Make Offer Modal (unchanged) ─────────────────────────────────── */}
       {modal === 'offer' && (
         <div className="modal-overlay">
           <form className="modal-content" onSubmit={handleMakeOffer}>
             <h2 style={{ fontSize: '1.3rem', color: 'var(--soil)', marginBottom: '1rem' }}>Make an Offer</h2>
-            
+
             <div style={{ display: 'flex', gap: '1rem' }}>
               <div className="form-group" style={{ flex: 1 }}>
                 <label>Offer Price (₹/{listing.unit})</label>
@@ -157,13 +232,16 @@ export default function BuyerListingDetail() {
         </div>
       )}
 
+      {/* ── Success Modal (design unchanged) ─────────────────────────────── */}
       {(modal === 'offer_success' || modal === 'buy_success') && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ textAlign: 'center' }}>
             <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</p>
             <h2 style={{ fontSize: '1.4rem', color: 'var(--soil)', marginBottom: '0.5rem' }}>Success!</h2>
             <p style={{ color: 'var(--bark)', marginBottom: '2rem' }}>
-              {modal === 'buy_success' ? 'Your order has been confirmed successfully.' : 'Your offer has been sent to the farmer. You will be notified when they respond.'}
+              {modal === 'buy_success'
+                ? 'Your order has been confirmed successfully.'
+                : 'Your offer has been sent to the farmer. You will be notified when they respond.'}
             </p>
             <button className="btn-primary" onClick={() => router.push('/buyer/orders')} style={{ width: '100%' }}>Go to Orders</button>
           </div>

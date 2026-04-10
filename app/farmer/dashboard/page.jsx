@@ -47,7 +47,7 @@ export default function FarmerDashboard() {
   }, [user]);
 
   const getNextStepName = (order) => {
-    const nextStep = order.supplyChainSteps?.find(s => s.status === 'pending');
+    const nextStep = order.supplyChainSteps?.find(s => s.status === 'active' || s.status === 'pending');
     if (!nextStep) return null;
     const BUTTON_LABELS = {
       'Quality Checked': 'Mark Quality Checked',
@@ -110,20 +110,23 @@ export default function FarmerDashboard() {
               
               const isConfirmed = order.status === 'confirmed';
               const isInProgress = order.status === 'in_progress';
-              const isDelivered = order.status === 'delivered';
+              const isCompleted = order.status === 'completed';
+              const isPaymentPending = order.status === 'payment_pending';
               
               let badgeColor = 'var(--mist)';
               let textColor = 'var(--soil)';
-              if (isConfirmed) badgeColor = 'var(--harvest)';
-              if (isInProgress) badgeColor = 'var(--sky)';
-              if (isDelivered) { badgeColor = 'var(--leaf)'; textColor = '#fff'; }
+              let badgeLabel = order.status.toUpperCase().replace('_', ' ');
+              if (isPaymentPending) { badgeColor = '#fff3cd'; textColor = '#856404'; badgeLabel = 'AWAITING PAYMENT'; }
+              if (isConfirmed)      { badgeColor = 'var(--harvest)'; textColor = '#fff'; badgeLabel = 'PAID — PENDING'; }
+              if (isInProgress)     { badgeColor = 'var(--sky)'; textColor = '#fff'; badgeLabel = 'IN PROGRESS'; }
+              if (isCompleted)      { badgeColor = 'var(--leaf)'; textColor = '#fff'; badgeLabel = 'COMPLETED'; }
 
               return (
                 <div key={order._id} className="card card-order" style={{ position: 'relative' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                     <div style={{ fontSize: '0.85rem', color: 'var(--bark)' }}>{order.batchId || order._id}</div>
                     <div style={{ padding: '4px 8px', borderRadius: '4px', background: badgeColor, color: textColor, fontSize: '0.75rem', fontWeight: 600 }}>
-                      {order.status.toUpperCase()}
+                      {badgeLabel}
                     </div>
                   </div>
                   
