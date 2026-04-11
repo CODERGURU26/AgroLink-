@@ -12,6 +12,7 @@ const farmerLinks = [
   { href: '/farmer/orders', label: 'Orders' },
   { href: '/farmer/smart-pricing', label: '🌦️ Pricing' },
   { href: '/farmer/analytics', label: 'Analytics' },
+  { href: '/govt-announcements', label: '🏛️ Govt Updates' },
   { href: '/community', label: 'Community' },
 ];
 
@@ -20,8 +21,10 @@ const buyerLinks = [
   { href: '/buyer/browse', label: 'Browse Produce' },
   { href: '/buyer/market-prices', label: 'Market Prices' },
   { href: '/buyer/orders', label: 'Orders' },
+  { href: '/govt-announcements', label: '🏛️ Govt Updates' },
   { href: '/community', label: 'Community' },
 ];
+
 
 export default function Navbar() {
   const { user, logout } = useAuth();
