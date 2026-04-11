@@ -3,6 +3,7 @@ import { AuthProvider } from '@/lib/auth-context';
 import Navbar from '@/components/Navbar/Navbar';
 import MandiTicker from '@/components/MandiTicker/MandiTicker';
 import GoogleTranslate from '@/components/GoogleTranslate/GoogleTranslate';
+import AnnouncementBar from '@/components/AnnouncementBar/AnnouncementBar';
 
 export const metadata = {
   title: 'AgroLink — Fair Deals, Straight From the Field',
@@ -19,10 +20,12 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <AuthProvider>
+          <AnnouncementBar />
           <Navbar />
           <MandiTicker />
           <main>{children}</main>
           <GoogleTranslate />
+
         </AuthProvider>
       </body>
     </html>
