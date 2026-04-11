@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "fast-xml-parser": "^5.5.11",
     "groq-sdk": "^1.1.2",
     "html2canvas": "^1.4.1",

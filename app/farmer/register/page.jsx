@@ -4,10 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
+import { CROPS, STATES } from '@/lib/config';
 import styles from '../../auth.module.css';
-
-const CROPS = ['Wheat', 'Rice', 'Tomato', 'Onion', 'Sugarcane', 'Soybean', 'Other'];
-const STATES = ['Maharashtra', 'Karnataka', 'Uttar Pradesh', 'Madhya Pradesh', 'Rajasthan', 'Gujarat', 'Punjab', 'Haryana', 'Tamil Nadu', 'Andhra Pradesh'];
 
 export default function FarmerRegister() {
   const { register } = useAuth();
@@ -63,7 +61,8 @@ export default function FarmerRegister() {
 
   return (
     <div className={styles.authPage}>
-      <form className={styles.authCard} onSubmit={handleSubmit}>
+      <div className={styles.authCenter}>
+        <form className={styles.authCard} onSubmit={handleSubmit}>
         {/* Progress Indicator */}
         <div className={styles.progressBar}>
           {[1, 2, 3].map((s) => (
@@ -231,6 +230,7 @@ export default function FarmerRegister() {
           Already registered? <Link href="/login">Log in here</Link>
         </p>
       </form>
+      </div>
     </div>
   );
 }
