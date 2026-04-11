@@ -61,7 +61,8 @@ export default function FarmerRegister() {
 
   return (
     <div className={styles.authPage}>
-      <form className={styles.authCard} onSubmit={handleSubmit}>
+      <div className={styles.authCenter}>
+        <form className={styles.authCard} onSubmit={handleSubmit}>
         {/* Progress Indicator */}
         <div className={styles.progressBar}>
           {[1, 2, 3].map((s) => (
@@ -229,6 +230,7 @@ export default function FarmerRegister() {
           Already registered? <Link href="/login">Log in here</Link>
         </p>
       </form>
+      </div>
     </div>
   );
 }

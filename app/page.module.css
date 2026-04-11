@@ -55,9 +55,19 @@
 }
 
 @keyframes blobFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%       { transform: translate(20px, -20px) scale(1.03); }
-  66%       { transform: translate(-10px, 15px) scale(0.97); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(20px, -20px) scale(1.03);
+  }
+
+  66% {
+    transform: translate(-10px, 15px) scale(0.97);
+  }
 }
 
 .heroContent {
@@ -139,7 +149,7 @@
   text-align: left;
 }
 
-.ctaBtn > span:first-child {
+.ctaBtn>span:first-child {
   font-size: 1.75rem;
   line-height: 1;
 }
@@ -222,8 +232,15 @@
 }
 
 @keyframes cardFloat {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-12px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
 /* ── Stats Section ─────────────────────────────── */
@@ -333,6 +350,7 @@
   text-align: center;
   position: relative;
   transition: transform var(--transition-base), box-shadow var(--transition-base);
+  margin: 2rem;
 }
 
 .howCard:hover {
@@ -442,7 +460,7 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 1.25rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .featIcon {
@@ -476,7 +494,9 @@
   transition: opacity var(--transition-base);
 }
 
-.featCard:hover .featAccentBar { opacity: 1; }
+.featCard:hover .featAccentBar {
+  opacity: 1;
+}
 
 /* ── Testimonials ─────────────────────────────── */
 .testimonialSection {
@@ -658,7 +678,9 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.socialBtn:hover { background: rgba(255, 255, 255, 0.15); }
+.socialBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
 
 .footerLinks {
   display: flex;
@@ -682,7 +704,9 @@
   text-decoration: none;
 }
 
-.footerLinks a:hover { color: var(--cream); }
+.footerLinks a:hover {
+  color: var(--cream);
+}
 
 .footerContact h4 {
   color: var(--harvest);
@@ -735,25 +759,66 @@
   text-decoration: none;
   transition: color var(--transition-fast);
 }
-.footerBottomLinks a:hover { color: var(--cream); }
+
+.footerBottomLinks a:hover {
+  color: var(--cream);
+}
 
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 1024px) {
-  .footerInner { grid-template-columns: 1fr 1fr; }
-  .floatCard1, .floatCard2, .floatCard3 { display: none; }
+  .footerInner {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .floatCard1,
+  .floatCard2,
+  .floatCard3 {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {
-  .hero { padding: 4rem 1.25rem 3rem; }
-  .howGrid { flex-direction: column; align-items: center; }
-  .howConnector { display: none; }
-  .statsInner { gap: 2rem; }
-  .footerInner { grid-template-columns: 1fr; gap: 2rem; padding-bottom: 2rem; }
-  .ctaBannerBtns { flex-direction: column; align-items: center; }
+  .hero {
+    padding: 4rem 1.25rem 3rem;
+  }
+
+  .howGrid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .howConnector {
+    display: none;
+  }
+
+  .statsInner {
+    gap: 2rem;
+  }
+
+  .footerInner {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .ctaBannerBtns {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 @media (max-width: 480px) {
-  .heroCta { flex-direction: column; align-items: center; }
-  .ctaBtn { min-width: 100%; justify-content: center; }
-  .testimonialGrid { grid-template-columns: 1fr; }
+  .heroCta {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ctaBtn {
+    min-width: 100%;
+    justify-content: center;
+  }
+
+  .testimonialGrid {
+    grid-template-columns: 1fr;
+  }
 }
