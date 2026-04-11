@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
+import { STATES } from '@/lib/config';
 import styles from '../../auth.module.css';
 
 const TYPES = ['Retailer', 'Wholesaler', 'Restaurant', 'Exporter'];
-const STATES = ['Maharashtra', 'Karnataka', 'Uttar Pradesh', 'Madhya Pradesh', 'Rajasthan', 'Gujarat', 'Punjab', 'Haryana', 'Tamil Nadu', 'Andhra Pradesh'];
 
 export default function BuyerRegister() {
   const { register } = useAuth();

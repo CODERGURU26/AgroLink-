@@ -4,8 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { MANDI_PRICES } from '@/lib/market-data';
-
-const CROPS = ['Wheat', 'Rice', 'Tomato', 'Onion', 'Sugarcane', 'Soybean'];
+import { CROPS } from '@/lib/config';
 
 export default function ListProduce() {
   const { user, loading } = useAuth();
