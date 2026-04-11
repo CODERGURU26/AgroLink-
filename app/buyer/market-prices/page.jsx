@@ -3,7 +3,6 @@
 import React from 'react';
 import styles from './MarketPrices.module.css';
 import { useMandiPrices } from '@/hooks/useMandiPrices';
-import GovtAnnouncements from '@/components/GovtAnnouncements/GovtAnnouncements';
 import { BASE_PRICES, SEVEN_DAY_HISTORY } from '@/lib/mandiData';
 
 // Generates an SVG sparkline path
@@ -164,9 +163,7 @@ export default function MarketPrices() {
           );
         })}
       </div>
-
-      {/* Government Announcements Section */}
-      <GovtAnnouncements />
     </div>
+
   );
 }
